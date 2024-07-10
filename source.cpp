@@ -1,13 +1,17 @@
+#define byte win_byte_overide 
 #include <iostream>
-using namespace std;
 
+#include <cmath>
+#include <string>
 #include <Windows.h>
+#undef byte
+using namespace std;
 
 int nScreenWidth = 120;
 int nScreenHeight = 40;
 
-float fPlayerX = 0.0f;
-float fPlayerY = 0.0f;
+float fPlayerX = 8.0f;
+float fPlayerY = 8.0f;
 float fPlayerA = 0.0f;
 
 int nMapHeight = 16;
@@ -27,20 +31,20 @@ int main() {
     wstring map;
 
     map += L"################";
-    map += L"################";
-    map += L"################";
-    map += L"################";
-    map += L"################";
-    map += L"################";
-    map += L"################";
-    map += L"################";
-    map += L"################";
-    map += L"################";
-    map += L"################";
-    map += L"################";
-    map += L"################";
-    map += L"################";
-    map += L"################";
+    map += L"#..............#";
+    map += L"#..............#";
+    map += L"#..............#";
+    map += L"#..............#";
+    map += L"#..............#";
+    map += L"#..............#";
+    map += L"#..............#";
+    map += L"#..............#";
+    map += L"#..............#";
+    map += L"#..............#";
+    map += L"#..............#";
+    map += L"#..............#";
+    map += L"#..............#";
+    map += L"#..............#";
     map += L"################";
 
     // game loop
@@ -77,10 +81,20 @@ int main() {
             int nCeiling = (float)(nScreenHeight / 2.0) - nScreenHeight / ((float)fDistanceToWall);
             int nFloor = nScreenHeight - nCeiling;
 
+            for(int y = 0; y < nScreenHeight; y++) {
+                if (y < nCeiling)
+                    screen[y*nScreenWidth+x] = ' ';
+                else if(y > nCeiling && y <= nFloor)
+                    screen[y*nScreenWidth + x] = '#';
+                else
+                    screen[y*nScreenWidth + x] = ' ';
+
+            }
+
         }
 
         screen[nScreenWidth * nScreenHeight - 1] = '\0';
-        WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
+        WriteConsoleOutputCharacterW(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
     }
 
 
