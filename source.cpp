@@ -4,6 +4,7 @@
 #include <cmath>
 #include <string>
 #include <Windows.h>
+#include <chrono>
 #undef byte
 using namespace std;
 
@@ -47,8 +48,25 @@ int main() {
     map += L"#..............#";
     map += L"################";
 
+    auto tp1 = chrono::system_clock::now();
+    auto tp2 = chrono::system_clock::now();
+
+
     // game loop
     while(1) {
+
+        tp2 = chrono::system_clock::now();
+        chrono::duration<float> elapsedTime = tp2 - tp1;
+        tp1 = tp2;
+        float fElapsedTime = elapsedTime.count();
+
+        //controls
+        // handle ccw rotation
+        if (GetAsyncKeyState((unsigned short)'A') & 0x8000)
+            fPlayerA -= (0.1f) * fElapsedTime;
+        if (GetAsyncKeyState((unsigned short)'D') & 0x8000)
+            fPlayerA += (0.1f) * fElapsedTime;
+
         for(int x = 0; x< nScreenWidth; x++) {
             // for each column, calculate the projected ray angle into world space
             float fRayAngle = (fPlayerA - fFOV / 2.0f) + ((float)x / (float)nScreenWidth) * fFOV;
@@ -81,11 +99,19 @@ int main() {
             int nCeiling = (float)(nScreenHeight / 2.0) - nScreenHeight / ((float)fDistanceToWall);
             int nFloor = nScreenHeight - nCeiling;
 
+            short nShade = ' ';
+
+            if (fDistanceToWall <= fDepth / 4.0f) nShade = 0x2588;
+            else if (fDistanceToWall < fDepth / 3.0f) nShade = 0x2593;
+            else if (fDistanceToWall < fDepth / 2.0f) nShade = 0x2592;
+            else if (fDistanceToWall < fDepth) nShade = 0x2591;
+            else nShade = ' ';
+
             for(int y = 0; y < nScreenHeight; y++) {
                 if (y < nCeiling)
                     screen[y*nScreenWidth+x] = ' ';
                 else if(y > nCeiling && y <= nFloor)
-                    screen[y*nScreenWidth + x] = '#';
+                    screen[y*nScreenWidth + x] = nShade;
                 else
                     screen[y*nScreenWidth + x] = ' ';
 
